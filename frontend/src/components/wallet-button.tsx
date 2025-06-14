@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 const WalletButton = () => {
   const [loading, setLoading] = useState(false);
-  
+
   const address = useWalletStore((state) => state.address);
   const setAddress = useWalletStore((state) => state.setAddress);
   const clearAddress = useWalletStore((state) => state.clearAddress);
@@ -19,18 +19,42 @@ const WalletButton = () => {
   const connectWallet = async () => {
     try {
       setLoading(true);
-      
+
       if (!window.ethereum) {
         toast.error('MetaMask not found');
         return;
       }
 
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const address = accounts[0];
-      setAddress(address);
-      toast.success(`Connected: ${address.slice(0, 6)}...`);
+      // First, request account access which will show the wallet selection popup
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts'
+      });
+
+      // If user has previously connected, we need to force the wallet selection
+      // This will show the account selection popup even if already connected
+      try {
+        await window.ethereum.request({
+          method: 'wallet_requestPermissions',
+          params: [{ eth_accounts: {} }]
+        });
+
+        // After permissions are granted, get the selected accounts
+        const updatedAccounts = await window.ethereum.request({
+          method: 'eth_accounts'
+        });
+
+        const selectedAddress = updatedAccounts[0];
+        setAddress(selectedAddress);
+        toast.success(`Connected: ${selectedAddress.slice(0, 6)}...${selectedAddress.slice(-4)}`);
+      } catch (permissionError: unknown) {
+        // If wallet_requestPermissions is not supported, fall back to regular connection
+        const address = accounts[0];
+        setAddress(address);
+        toast.success(`Connected: ${address.slice(0, 6)}...${address.slice(-4)}`);
+      }
     } catch (err: unknown) {
       toast.error('Failed to connect wallet');
+      console.error('Wallet connection error:', err);
     } finally {
       setLoading(false);
     }
