@@ -19,10 +19,10 @@ ___
 - [ ] **Goal**: Store agents and allow upvotes.
 
 - Tasks:
-  - [ ] AgentRegistry.sol - store metadataURI per agent (e.g. from IPFS)
-  - [ ] Voting.sol - vote(agentId) → track count per wallet
-  - [ ] Deploy both to Monad testnet
-  - [ ] Export ABIs for frontend/backend use
+  - [x] AgentRegistry.sol - store metadataURI per agent (e.g. from IPFS)
+  - [x] Voting.sol - vote(agentId) → track count per wallet
+  - [x] Deploy both to Monad testnet
+  - [x] Export ABIs for frontend/backend use
 
 ___
 
@@ -31,7 +31,7 @@ ___
 - **Goal**: Users can view, vote, and run agents.
 
 - Pages:
-  - [ ] / - Home page:
+  - [x] / - Home page:
     - List all agents from MCP
     - Show name, tags, votes
     - Vote button (calls vote-agent tool)
@@ -47,8 +47,8 @@ ___
 
 - Core Components:
   - [ ] ConnectWalletButton
-  - [ ] AgentCard
-  - [ ] VoteButton (calls vote-agent tool)
+  - [x] AgentCard
+  - [x] VoteButton (calls vote-agent tool)
   
 ___
 

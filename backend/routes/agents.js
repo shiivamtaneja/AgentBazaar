@@ -1,15 +1,24 @@
+// routes/agents.js
 const express = require('express');
 const router = express.Router();
 const { ethers } = require('ethers');
-const abi = require('../contract/agentRegistryAbi.json');
+const registryAbi = require('../contract/agentRegistryAbi.json');
+const votingAbi = require('../contract/voteContractAbi.json');
 
 require('dotenv').config();
 
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-const contract = new ethers.Contract(
+
+const registryContract = new ethers.Contract(
 	process.env.AGENT_REGISTRY_CONTRACT_ADDRESS,
-	abi,
+	registryAbi,
+	wallet
+);
+
+const votingContract = new ethers.Contract(
+	process.env.AGENT_VOTING_CONTRACT_ADDRESS,
+	votingAbi,
 	wallet
 );
 
@@ -22,7 +31,7 @@ router.post('/', async (req, res) => {
 			return res.status(400).json({ error: 'Missing required fields' });
 		}
 
-		const tx = await contract.uploadAgent(name, description, model, category);
+		const tx = await registryContract.uploadAgent(name, description, model, category);
 		await tx.wait();
 
 		res.json({ message: 'Agent uploaded successfully', txHash: tx.hash });
@@ -34,19 +43,25 @@ router.post('/', async (req, res) => {
 // Get all agents uploaded by the wallet address
 router.get('/', async (req, res) => {
 	try {
-		const rawAgents = await contract.getMyAgents();
+		const rawAgents = await registryContract.getMyAgents();
 
-		const agents = rawAgents.map((agent) => ({
-			id: agent.id.toString(),
-			name: agent.name,
-			owner: agent.owner,
-			description: agent.description,
-			model: agent.model,
-			category: agent.category,
-			timestamp: agent.timestamp.toString(),
-		}));
+		const enrichedAgents = await Promise.all(
+			rawAgents.map(async (agent) => {
+				const voteCount = await votingContract.getVotes(agent.id);
+				return {
+					id: agent.id.toString(),
+					name: agent.name,
+					owner: agent.owner,
+					description: agent.description,
+					model: agent.model,
+					category: agent.category,
+					timestamp: agent.timestamp.toString(),
+					votes: voteCount.toString()
+				};
+			})
+		);
 
-		res.json({ agents });
+		res.json({ agents: enrichedAgents });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
@@ -55,7 +70,7 @@ router.get('/', async (req, res) => {
 // Get agent by ID
 router.get('/:id', async (req, res) => {
 	try {
-		const agent = await contract.getAgent(req.params.id);
+		const agent = await registryContract.getAgent(req.params.id);
 
 		res.json({
 			agent: {
