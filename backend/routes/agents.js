@@ -22,6 +22,9 @@ const votingContract = new ethers.Contract(
 	wallet
 );
 
+const NodeCache = require('node-cache');
+const cache = new NodeCache({ stdTTL: 10 }); // Cache for 10 seconds
+
 // Upload a new AI agent
 router.post('/', async (req, res) => {
 	try {
@@ -44,6 +47,14 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
 	try {
 		const userAddress = req.query.address;
+
+		const cacheKey = userAddress || 'public';
+
+		// Check if cached
+		const cached = cache.get(cacheKey);
+		if (cached) {
+			return res.json({ agents: cached });
+		}
 
 		const rawAgents = await registryContract.getMyAgents();
 
