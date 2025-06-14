@@ -29,7 +29,7 @@
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "ipfsHash",
+				"name": "category",
 				"type": "string"
 			},
 			{
@@ -74,12 +74,12 @@
 			},
 			{
 				"internalType": "string",
-				"name": "model",
+				"name": "category",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "ipfsHash",
+				"name": "model",
 				"type": "string"
 			},
 			{
@@ -125,12 +125,12 @@
 					},
 					{
 						"internalType": "string",
-						"name": "model",
+						"name": "category",
 						"type": "string"
 					},
 					{
 						"internalType": "string",
-						"name": "ipfsHash",
+						"name": "model",
 						"type": "string"
 					},
 					{
@@ -175,12 +175,12 @@
 					},
 					{
 						"internalType": "string",
-						"name": "model",
+						"name": "category",
 						"type": "string"
 					},
 					{
 						"internalType": "string",
-						"name": "ipfsHash",
+						"name": "model",
 						"type": "string"
 					},
 					{
@@ -229,7 +229,7 @@
 			},
 			{
 				"internalType": "string",
-				"name": "_ipfsHash",
+				"name": "_category",
 				"type": "string"
 			}
 		],
