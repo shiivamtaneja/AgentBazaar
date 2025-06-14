@@ -72,30 +72,11 @@ const AgentShowCaseSection = () => {
 
       try {
         setLoading(true);
-        const res = await fetch('http://localhost:3001/api/v1/agents');
+        const res = await fetch(`http://localhost:3001/api/v1/agents?address=${address}`);
         const data = await res.json();
-
-        const enrichedAgents = await Promise.all(
-          data.agents.map(async (agent: Agent) => {
-            const [votesRes, hasVotedRes] = await Promise.all([
-              fetch(`http://localhost:3001/api/v1/voting/${agent.id}`),
-              fetch(`http://localhost:3001/api/v1/voting/has-voted/${agent.id}/${address}`),
-            ]);
-
-            const votesData = await votesRes.json();
-            const votedData = await hasVotedRes.json();
-
-            return {
-              ...agent,
-              votes: parseInt(votesData.votes || '0'),
-              hasVoted: votedData.hasVoted || false,
-            };
-          })
-        );
-
-        setAgents(enrichedAgents);
+        setAgents(data.agents);
       } catch (error) {
-        console.error('Error fetching agents or vote info:', error);
+        console.error('Error fetching agents:', error);
       } finally {
         setLoading(false);
       }
@@ -103,6 +84,7 @@ const AgentShowCaseSection = () => {
 
     fetchAgents();
   }, [address]);
+
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-emerald-900/20 to-black">
