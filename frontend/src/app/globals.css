@@ -120,3 +120,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.hero-section-dots {
+  @apply rounded-full animate-bounce w-1.5 h-1.5 absolute;
+}
