@@ -43,11 +43,19 @@ router.post('/', async (req, res) => {
 // Get all agents uploaded by the wallet address
 router.get('/', async (req, res) => {
 	try {
+		const userAddress = req.query.address;
+
 		const rawAgents = await registryContract.getMyAgents();
 
 		const enrichedAgents = await Promise.all(
 			rawAgents.map(async (agent) => {
 				const voteCount = await votingContract.getVotes(agent.id);
+
+				let hasVoted = false;
+				if (userAddress && ethers.isAddress(userAddress)) {
+					hasVoted = await votingContract.hasUserVoted(userAddress, agent.id);
+				}
+
 				return {
 					id: agent.id.toString(),
 					name: agent.name,
@@ -56,7 +64,8 @@ router.get('/', async (req, res) => {
 					model: agent.model,
 					category: agent.category,
 					timestamp: agent.timestamp.toString(),
-					votes: voteCount.toString()
+					votes: voteCount.toString(),
+					hasVoted,
 				};
 			})
 		);
