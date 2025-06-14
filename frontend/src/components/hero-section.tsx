@@ -1,6 +1,8 @@
 import React from 'react'
 
-import { Sparkles, Users, Wallet, Zap } from 'lucide-react'
+import WalletButton from './wallet-button'
+
+import { Sparkles, Users, Zap } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 
@@ -54,16 +56,7 @@ const HeroSection = () => {
           </Button>
         </div>
 
-        <div className="flex justify-center">
-          <Button
-            variant="secondary"
-            size="lg"
-            className="bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border-gray-600/30 hover:border-gray-500/50 px-6 py-3 transition-all duration-300"
-          >
-            <Wallet className="w-4 h-4 mr-2" />
-            Connect Wallet
-          </Button>
-        </div>
+        <WalletButton />
 
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
           <div className="text-center">
