@@ -5,6 +5,7 @@ import WalletButton from './wallet-button'
 import { Sparkles, Users, Zap } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
+import SubmitAgentForm from './SubmitAgentForm'
 
 const HeroSection = () => {
   return (
@@ -46,14 +47,7 @@ const HeroSection = () => {
             Explore Agents
           </Button>
 
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-purple-600/50 text-purple-500 hover:bg-purple-600/10 hover:border-purple-500 hover:text-white px-8 py-6 text-lg font-semibold transition-all duration-300 transform hover:scale-105"
-          >
-            <Zap className="w-5 h-5 mr-2" />
-            Submit Yours
-          </Button>
+          <SubmitAgentForm />
         </div>
 
         <WalletButton />
