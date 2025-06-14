@@ -1,10 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const abi = require('../contract/voteContractAbi.json');
+const { ethers } = require('ethers');
+
+require('dotenv').config();
+
+const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+const contract = new ethers.Contract(process.env.AGENT_VOTING_CONTRACT_ADDRESS, abi, wallet);
 
 // Create a new vote for an agent
-router.post('/', async (req, res) => {
+router.post('/:id', async (req, res) => {
   try {
-    res.json({ message: 'Create new vote' });
+    const tx = await contract.voteForAgent(req.params.id);
+    await tx.wait();
+
+    res.json({ message: 'Vote cast successfully', txHash: tx.hash });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -13,16 +24,9 @@ router.post('/', async (req, res) => {
 // Get vote by agent ID
 router.get('/:id', async (req, res) => {
   try {
-    res.json({ message: `Get vote ${req.params.id}` });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+    const voteCount = await contract.getVotes(req.params.id);
 
-// Delete vote
-router.delete('/:id', async (req, res) => {
-  try {
-    res.json({ message: `Delete vote ${req.params.id}` });
+    res.json({ agentId: req.params.id, votes: voteCount.toString() });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
