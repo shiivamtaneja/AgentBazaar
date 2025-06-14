@@ -1,12 +1,13 @@
 import React from 'react'
+
+import { Sparkles, Users, Wallet, Zap } from 'lucide-react'
 import { Badge } from './ui/badge'
-import { Sparkles, Users, Zap, Wallet } from 'lucide-react'
 import { Button } from './ui/button'
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-12 sm:pt-0">
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-emerald-900/20 animate-pulse" />
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-blue-900/20 to-emerald-900/20" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,58,237,0.1),transparent_50%)] animate-pulse" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.1),transparent_50%)] animate-pulse" />
 
