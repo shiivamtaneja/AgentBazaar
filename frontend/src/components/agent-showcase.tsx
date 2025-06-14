@@ -6,15 +6,18 @@ import AgentCard from './agent-card'
 
 import { ArrowRight, Loader2, Sparkles } from 'lucide-react'
 import { Button } from './ui/button'
+import { useWalletStore } from '@/store/wallet'
 
 export interface Agent {
   id: string;
   name: string;
+  owner: string;
   description: string;
   model: string;
   category: string;
-  owner: string;
   timestamp: string;
+  votes: number;
+  hasVoted: boolean;
 }
 
 // const sampleAgents = [
@@ -61,22 +64,45 @@ export interface Agent {
 const AgentShowCaseSection = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { address } = useWalletStore();
 
   useEffect(() => {
     const fetchAgents = async () => {
+      if (!address) return;
+
       try {
-        const response = await fetch('http://localhost:3001/api/v1/agents');
-        const data = await response.json();
-        setAgents(data.agents || []);
+        setLoading(true);
+        const res = await fetch('http://localhost:3001/api/v1/agents');
+        const data = await res.json();
+
+        const enrichedAgents = await Promise.all(
+          data.agents.map(async (agent: Agent) => {
+            const [votesRes, hasVotedRes] = await Promise.all([
+              fetch(`http://localhost:3001/api/v1/voting/${agent.id}`),
+              fetch(`http://localhost:3001/api/v1/voting/has-voted/${agent.id}/${address}`),
+            ]);
+
+            const votesData = await votesRes.json();
+            const votedData = await hasVotedRes.json();
+
+            return {
+              ...agent,
+              votes: parseInt(votesData.votes || '0'),
+              hasVoted: votedData.hasVoted || false,
+            };
+          })
+        );
+
+        setAgents(enrichedAgents);
       } catch (error) {
-        console.error('Error fetching agents:', error);
+        console.error('Error fetching agents or vote info:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchAgents();
-  }, []);
+  }, [address]);
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-emerald-900/20 to-black">
