@@ -20,20 +20,18 @@ contract AIAgentVoting {
         registry = AIAgentRegistry(_registryAddress);
     }
 
-    function voteForAgent(uint256 _agentId) public {
-        require(
-            !hasVoted[msg.sender][_agentId],
-            "Already voted for this agent"
-        );
+    function voteForAgent(uint256 _agentId, address voter) public {
+        require(voter != address(0), "Invalid voter address");
+        require(!hasVoted[voter][_agentId], "Already voted for this agent");
 
-        // Ensure the agent exists — this will revert if the agent is invalid
+        // Ensure the agent exists
         registry.getAgent(_agentId);
 
         // Record the vote
         votes[_agentId] += 1;
-        hasVoted[msg.sender][_agentId] = true;
+        hasVoted[voter][_agentId] = true;
 
-        emit Voted(msg.sender, _agentId, votes[_agentId]);
+        emit Voted(voter, _agentId, votes[_agentId]);
     }
 
     function getVotes(uint256 _agentId) external view returns (uint256) {

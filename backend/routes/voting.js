@@ -17,8 +17,22 @@ const contract = new ethers.Contract(
 router.post('/:id', async (req, res) => {
   try {
     const agentId = req.params.id;
+    const { address } = req.body;
 
-    const tx = await contract.voteForAgent(agentId);
+    if (!address) {
+      return res.status(400).json({ error: 'Wallet address is required' });
+    }
+
+    if (!ethers.isAddress(address)) {
+      return res.status(400).json({ error: 'Invalid wallet address' });
+    }
+
+    const hasVoted = await contract.hasUserVoted(address, agentId);
+    if (hasVoted) {
+      return res.status(400).json({ error: 'User has already voted for this agent' });
+    }
+
+    const tx = await contract.voteForAgent(agentId, address);
     await tx.wait();
 
     res.json({ message: 'Vote cast successfully', txHash: tx.hash });
@@ -28,24 +42,23 @@ router.post('/:id', async (req, res) => {
   }
 });
 
+
 // Get total votes for an agent
 router.get('/:id', async (req, res) => {
   try {
     const agentId = req.params.id;
     const voteCount = await contract.getVotes(agentId);
-
     res.json({ agentId, votes: voteCount.toString() });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Check if user has voted 
+// Check if user has voted
 router.get('/has-voted/:agentId/:userAddress', async (req, res) => {
   try {
     const { agentId, userAddress } = req.params;
     const voted = await contract.hasUserVoted(userAddress, agentId);
-
     res.json({ agentId, user: userAddress, hasVoted: voted });
   } catch (error) {
     res.status(500).json({ error: error.message });

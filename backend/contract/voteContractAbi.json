@@ -121,6 +121,11 @@
 				"internalType": "uint256",
 				"name": "_agentId",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "voter",
+				"type": "address"
 			}
 		],
 		"name": "voteForAgent",
