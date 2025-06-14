@@ -9,8 +9,8 @@ contract AIAgentRegistry {
         address owner;
         string name;
         string description;
+        string category;
         string model;
-        string ipfsHash; 
         uint256 timestamp;
     }
 
@@ -21,7 +21,7 @@ contract AIAgentRegistry {
         address indexed owner,
         string name,
         string model,
-        string ipfsHash,
+        string category,
         uint256 timestamp
     );
 
@@ -29,7 +29,7 @@ contract AIAgentRegistry {
         string memory _name,
         string memory _description,
         string memory _model,
-        string memory _ipfsHash
+        string memory _category
     ) public {
         AIAgent memory newAgent = AIAgent({
             id: nextAgentId,
@@ -37,7 +37,7 @@ contract AIAgentRegistry {
             name: _name,
             description: _description,
             model: _model,
-            ipfsHash: _ipfsHash,
+            category: _category,
             timestamp: block.timestamp
         });
 
@@ -48,7 +48,7 @@ contract AIAgentRegistry {
             msg.sender,
             _name,
             _model,
-            _ipfsHash,
+            _category,
             block.timestamp
         );
 
